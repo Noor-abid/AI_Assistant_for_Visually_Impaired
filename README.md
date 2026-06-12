@@ -1,6 +1,6 @@
-# VISIO-NETRA
+# AI_Assistant_for_Visually_Impaired
 
-VISIO-NETRA is a mobile-first assistive vision project inspired by the Netra reference project and the AIDEN-style research paper in this workspace. It turns a phone or laptop browser into a local vision assistant for object finding, scene awareness, OCR support, social cues, step-by-step tasks, and saved spatial landmarks.
+AI_Assistant_for_Visually_Impaired is a mobile-first assistive vision project inspired by the Netra reference project and the AIDEN-style research paper in this workspace. It turns a phone or laptop browser into a local vision assistant for object finding, scene awareness, OCR support, social cues, step-by-step tasks, and saved spatial landmarks.
 
 The app runs locally with Python and a browser. The default build does not need a cloud API key. It uses deterministic local image heuristics so the complete workflow can be demonstrated immediately, while the same API shape can later be connected to YOLOv8, Gemini, LLaVA, Tesseract, EasyOCR, or another production model.
 
@@ -12,7 +12,7 @@ This is a research and demo project, not a certified mobility, medical, or safet
 
 Compared with the public Netra idea, this version is built as a fuller local product:
 
-- Camera-first Netra-style interface with AI reasoning and detected-object overlays
+- Camera-first interface with AI reasoning and detected-object overlays
 - One-screen mobile PWA layout that also works on desktop
 - Object finding with direction, distance estimate, confidence, vibration pattern, and speech
 - Precision mode for centering small targets such as handles, labels, and cups
@@ -186,7 +186,7 @@ Frame endpoints accept a browser image data URL:
 ## Project Structure
 
 ```text
-VISIO-NETRA
+AI_Assistant_for_Visually_Impaired
 |-- visio_ai_server.py          Local web server and assistive-vision API
 |-- public/
 |   |-- index.html              Mobile-first interface
@@ -205,7 +205,6 @@ VISIO-NETRA
 |-- run_visio_ai.cmd            Local desktop launcher
 |-- run_visio_mobile.cmd        Same-Wi-Fi mobile launcher
 |-- requirements.txt            Python dependencies
-`-- VISIO-NETRA-project.zip     Packaged copy of the project
 ```
 
 ## Installable App Mode
@@ -294,5 +293,3 @@ Current coverage includes:
 - Reference project: [ZentraHost/netra_project](https://github.com/ZentraHost/netra_project)
 - Video reference: [YouTube demo](https://www.youtube.com/watch?v=Ax3SkwHOkkk)
 - Research direction: AIDEN-style object guidance, OCR, scene description, haptic feedback, TAM evaluation, and privacy-aware assistive AI
-
-VISIO-NETRA keeps the Netra-style experience but turns it into a clearer, more complete, locally runnable project that is easy to demonstrate and practical to upgrade.
