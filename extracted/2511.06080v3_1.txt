@@ -1,0 +1,804 @@
+
+
+===== PAGE 1 =====
+AIDEN: Design and Pilot Study of an AI Assistant for the
+Visually Impaired
+Luis Marquez-Carpintero1, Francisco Gomez-Donoso1, Zuria Bauer 2, Bessie
+Dominguez-Dager1, Alvaro Belmonte-Baeza1, M´ onica Pina-Navarro1, Francisco
+Morillas-Espejo1, Felix Escalona1, and Miguel Cazorla 1
+1Institute for Computer Research, Alicante, Spain.
+2ETH Zurich, Switzerland.
+Abstract
+This paper presents AIDEN, an artificial intelligence–based assistant designed to enhance
+the autonomy and daily quality of life of visually impaired individuals, who often struggle
+with object identification, text reading, and navigation in unfamiliar environments. Exist-
+ing solutions such as screen readers or audio-based assistants facilitate access to information
+but frequently lead to auditory overload and raise privacy concerns in open environments.
+AIDEN addresses these limitations with a hybrid architecture that integrates You Only Look
+Once (YOLO) for real-time object detection and a Large Language and Vision Assistant
+(LLaVA) for scene description and Optical Character Recognition (OCR). A key novelty of
+the system is a continuous haptic guidance mechanism based on a Geiger-counter metaphor,
+which supports object centering without occupying the auditory channel, while privacy is
+preserved by ensuring that no personal data are stored. Empirical evaluations with visually
+impaired participants assessed perceived ease of use and acceptance using the Technology
+Acceptance Model (TAM). Results indicate high user satisfaction, particularly regarding
+intuitiveness and perceived autonomy. Moreover, the “Find an Object” achieved effective
+real-time performance. These findings provide promising evidence that multimodal hap-
+tic–visual feedback can improve daily usability and independence compared to traditional
+audio-centric methods, motivating larger-scale clinical validations.
+1 Keywords
+Mobile Computing, Accessibility Systems, Empirical Studies, Human–Computer Interaction
+2 Introduction
+One of the most promising applications of artificial intelligence (AI) is the development of
+technology to help people with some kind of impairment. In particular, AI-based assistants for
+visually impaired users can significantly improve their quality of life by helping them navigate
+the world with greater ease and independence.
+Visually impaired individuals face a number of challenges in their daily lives. They may have
+difficulty identifying objects or moving around unfamiliar environments. Tasks such as locating
+items in a supermarket or interpreting informational signs can pose substantial challenges due
+to the lack of visual input [1]. These limitations often reduce autonomy and negatively affect
+the daily functioning of visually impaired individuals.
+At present, several solutions exist to support individuals with visual impairments in their
+daily activities. Audiobooks and screen readers enable access to written content, and various
+mobile applications offer scene description capabilities [2, 3]. However, these methods heavily
+1
+arXiv:2511.06080v3  [cs.CV]  2 Dec 2025
+
+
+===== PAGE 2 =====
+rely on audio feedback, which can be problematic in noisy environments [4] or cause auditory
+overload [5], and must be designed so that app-generated sounds do not mask environmental
+cues [6].
+With this in mind, we present AIDEN: An AI-based assistant for visually impaired individ-
+uals. AIDEN is a system powered by AI techniques designed specifically for this user group,
+and developed as an application that is installed on a resource-constrained smartphone. Our
+assistant leverages state-of-the-art machine learning algorithms to identify and describe objects
+and read text from the user’s surroundings. Through a combination of computer vision, natural
+language processing and speech synthesis, our assistant can help visually impaired individuals
+interact with their environment and perform everyday tasks with greater ease and independence.
+AIDEN distinguishes itself from existing assistive technologies by integrating multiple func-
+tionalities such as scene description, Optical Character Recognition (OCR), object detection,
+and real-time question answering, into a single smartphone application. This approach addresses
+the limitations of previous systems, which often focus on a simple task or require additional and
+specialized hardware [7]. By combining “Find an Object”, object recognition, and text read-
+ing capabilities, AIDEN provides a comprehensive solution for individuals with limited vision,
+offering real-time feedback and interaction in a broader range of environments. Distinct from
+volunteer-based assistance, AIDEN operates with no human intervention, ensuring that visual
+data is processed exclusively by algorithms. This approach, coupled with a strict policy of not
+storing any personal data, ensures a secure user experience [8].
+The specific methods incorporated in the system are categorized into haptic and audio
+interactions as follows:
+Haptic interaction
+•Find an Object with continuous haptic feedback:Guides the user to the position
+of the desired object using a vibration mechanism (Geiger-counter metaphor [9]).
+•Haptic interface feedback:Provides tactile confirmation for user actions to enhance
+navigation without auditory clutter.
+Audio interaction
+•T ext-to-Speech (TTS) systems:Facilitate the user’s interaction with the system and
+provide access to textual information.
+•Question-answering system:Answers questions about the environment based on the
+captured image.
+•OCR:Converts detected text into speech.
+•Accessible interface:Designed for compatibility with screen readers and audio-based
+navigation.
+3 Literature Review
+Modern assistive technology leverages deep learning and computer vision to address challenges
+like object identification and scene description. Literature approaches utilize architectures such
+as Faster R-CNN, ResNet, and real-time models like YOLO (You Only Look Once) to interpret
+the environment [10, 11]. Widely adopted applications such as Seeing AI [2], Be My Eyes [3]
+and Envision AI [12] have incorporated these AI advancements, setting a high standard for
+accessibility. Despite these technical strides, qualitative analyses reveal a hierarchy of user
+needs where navigation remains the most demanded feature (37% of requests), followed by
+communication and visual identification [13].
+2
+
+
+===== PAGE 3 =====
+Recent experimental work such as MR.NAVI [14] explores mixed-reality (MR) navigation
+assistance for people with visual impairments, using a HoloLens2 headset to provide spatial
+audio guidance based on real-time scene understanding. While this line of research highlights
+the potential of head-mounted MR devices to offer rich, context-aware navigation support, the
+reliance on expensive, power-demanding hardware like HoloLens2 currently limits accessibility
+and hinders widespread market adoption beyond research prototypes.
+A significant methodological divergence exists regarding how current systems convey this
+spatial information and handle user interaction. While market leaders provide robust object
+recognition, they predominantly rely on auditory feedback loops, TTS or sonification. Previous
+studies have shown that this is a critical design flaw known as “auditory masking” where the
+user is unable to hear essential environmental cues (e.g., traffic flow) due to the continuous
+audio stream from the assistant [15]. Furthermore, the increasing reliance on cloud-based pro-
+cessing for proprietary smart glasses introduces critical privacy vulnerabilities. Since visually
+impaired users cannot visually verify the scene before capture, there is a high risk of inad-
+vertently transmitting sensitive information, such as banking details or medical records—to
+third-party commercial servers. Crucially, this vulnerability extends to the domestic sphere;
+users may require assistance in private spaces (e.g., bathrooms) where undetected mirrors or
+reflective surfaces could unintentionally capture and transmit images of the user in intimate
+or compromised states. Moreover, continuous environmental scanning frequently captures by-
+standers without consent, posing significant challenges regarding biometric data protection and
+General Data Protection Regulation (GDPR) compliance. To position our contribution within
+this landscape, Table 1 presents a comparative analysis between AIDEN and leading commercial
+assistive technologies.
+System Guidance F eedback Object
+Search
+Privacy &
+Data
+VQA
+Capa-
+bility
+Smartphone
+Only
+Haptic Audio
+Seeing AI[2] ✗ ✓
+∼
+(Post-photo and
+finger interaction)
+∼
+(Subscription)
+✗ ✓
+Be My
+Eyes[3] ✗ ✓ ✗ ✗ ✓ ✓
+Envision
+AI[12] ✗ ✓
+∼
+(Non orientation
+guide)
+∼
+(Subscription)
+✓ ✓
+Meta
+Ray-Ban[16] ✗ ✓ ✗ ✗ ✓ ✗
+AIDEN
+(Ours) ✓ ✓ ✓ ✓ ✓ ✓
+Table 1: Comparative analysis: AIDEN vs. leading commercial assistive technologies.Note:
+The original custom commands (\cmark,\xmark,\imark) have been replaced by standard
+symbols (\ding{51},\ding{55}, and∼).
+As highlighted in Table 1, distinct gaps exist regarding sensory dependency, affordabil-
+3
+
+
+===== PAGE 4 =====
+ity, and data control. While market leaders like Seeing AI and wearables such as the Meta
+Ray-Ban [16] offer robust recognition capabilities, the latter, though less expensive than ex-
+perimental HoloLens-based assistants as [14], still entails a significant financial investment for
+users. Additionally, their reliance on audio-centric feedback creates a significant “auditory de-
+pendency.” This approach can be intrusive in quiet social settings or potentially dangerous
+in noisy outdoor environments. In contrast, AIDEN addresses this by offloading the guidance
+mechanism to the tactile channel. The “Geiger-counter” metaphor allows for precise, discreet
+object localization without blocking the user’s hearing, enabling a silent operation mode un-
+available in “Virtual Volunteer” based systems. Furthermore, while cloud-heavy architectures
+facilitate high-performance Visual Question Answering (VQA), they often compromise user pri-
+vacy through mandatory account linking and dependence on third-party commercial servers
+like OpenAI or Meta, whose data handling policies have faced significant scrutiny regarding the
+processing of sensitive user data on US-based infrastructure.
+Beyond technical performance, the development of applications designed for visually im-
+paired users represents a critical area within assistive technology research, driven by the global
+imperative to enhance autonomy and social inclusion. The success of these technologies hinges
+on their acceptance by the target population. While initially designed for organizational in-
+formation systems, the Technology Acceptance Model (TAM) [17] and its successor Unified
+Theory of Acceptance and Use of Technology (UTAUT), have been successfully extended to
+evaluate assistive applications [18, 19]. Specifically, literature extending the UTAUT model
+suggests that for individuals with visual impairments, core factors like performance expectancy
+are complemented by disability-specific interventions such as training, which acts as a significant
+direct predictor of behavioral intention (β= 0.538, p < .001) by reducing usage barriers [20].
+Consequently, we draw upon this extended framework to structure the evaluation of AIDEN,
+incorporating training to analyze its influence on the user’s intention to adopt the system.
+4 Methodology
+AIDEN is implemented as a cross-platform mobile application aimed at assisting visually im-
+paired individuals in their daily activities. It integrates machien learning and deep learning
+techniques to enable three core functionalities: “Text-To-Speech”, “Scene Description” with
+VQA, and “Find an Object”. These features are accessed through a user-friendly interface
+specifically designed with accessibility in mind, aiming to improve the quality of life of users
+with visual impairments.
+The application is developed for both Android and iOS platforms using a hybrid architecture
+based on the Ionic framework (v6.20.1), Capacitor Core (v4.7.0), and Vue.js (v3.3.7). This stack
+facilitates deployment across multiple platforms, including web, while maintaining a consistent
+user experience. Accessibility support is enhanced through the integration of the Capacitor
+ScreenReader plugin [21], which enables screen content narration, and the Vue i18n library [22],
+which provides multilingual support. The following subsections detail the implementation of
+each of AIDEN’s core functionalities.
+4.1 Participants
+This study involved a cohort of seven participants (N= 7), informed and consent was obtained
+from all individual participants included in the study, with visual impairments. The recruitment
+of this specialized, low-incidence population was facilitated through formal collaboration with
+the National Organization of Spanish Blind People (ONCE). This necessity reflects the resource
+constraints in conducting assistive technology research in resource-limited environments, where
+the available evidence is limited in quantity and quality, unevenly distributed across assistive
+technology types, and largely based on observational study designs [23]. To ensure an unbiased
+4
+
+
+===== PAGE 5 =====
+evaluation, none of the participants were involved in the system’s development; their input was
+collected only after iterative feedback from accessibility experts to assess user acceptance and
+usability.
+As detailed in Table 2, a total of seven visually impaired individuals (4 males and 3 fe-
+males), aged between 42 and 58 years (µ= 50.143,σ= 6.256), were recruited. To ensure a
+comprehensive evaluation of the system’s applicability, the sample was deliberately stratified
+to guarantee crucial heterogeneity. The cohort included users with varying degrees of visual
+impairment, specifically categorized as Total Blindness (no light perception) and low vision, se-
+vere visual impairment but with some residual vision, such as perception of light and shadows.
+This diversity ensures that the feedback captured the complex interaction challenges faced by
+a wide spectrum of the target specialized population.
+A crucial aspect of the recruitment was assessing the participants’ technological proficiency.
+All participants possessed at least intermediate experience with smartphones and were familiar
+with standard accessibility tools, such as screen readers (e.g., TalkBack on Android or VoiceOver
+on iOS). This methodological step ensured that the evaluation focused on the intrinsic usability
+of the AIDEN system itself, rather than external factors such as the basic learning curve of
+using a touchscreen device.
+The selection of this small sample size (N= 7) is rigorously justified by two critical method-
+ological factors. First, the primary qualitative objective was usability assessment. Second, the
+efficiency with which new usability problems are discovered follows a clear pattern of dimin-
+ishing returns: across several studies, tests with about five participants typically uncovered
+around 80–85% of all observed usability problems, with additional users yielding progressively
+fewer new issues [24, 25].This empirical pattern underlies the widely cited “five-users” heuris-
+tic in usability engineering. Furthermore, evidence indicates that usability problem severity is
+correlated with detection probability, meaning the most critical flaws are likely to be identi-
+fied within the first few sessions [24]. Consequently, testing with a sample of 7 participants is
+highly efficient for identifying the majority of critical usability issues, maximizing the return on
+investment in early-stage validation. While this cohort size supports robust qualitative insights
+and descriptive quantitative metrics (such as runtime performance and the high internal consis-
+tency of TAM scores), it strictly limits the statistical power required for conducting inferential
+statistical analysis or generalizing findings to the broader visually impaired community.
+ID Gender Age Impairment OS
+P1 Female 57 Total blindness iOS
+P2 Male 43 Low vision iOS
+P3 Male 58 Total blindness Android
+P4 Female 42 Total blindness iOS
+P5 Female 51 Low vision iOS
+P6 Male 48 Total blindness iOS
+P7 Male 52 Total blindness iOS
+Table 2: Demographics and technological profile of participants
+4.2 Accessible Interaction Design
+To ensure the system is fully usable by individuals with varying degrees of visual impairment
+(from low vision to total blindness), the user interface was designed following a screen-reader-
+first design philosophy and aiming to conform to the Web Content Accessibility Guidelines
+(WCAG) 2.1 Level AA [26].
+Contrary to standard visual interfaces where interaction relies on hand-eye coordination,
+5
+
+
+===== PAGE 6 =====
+AIDEN’s interaction model relies on the underlying accessibility tree provided by the operating
+system. The application is fully integrated with native screen readers,TalkBackon Android
+andVoiceOveron iOS.
+Consequently, the interaction flow is defined as follows:
+•Non-visual navigation:All interactive elements (buttons, menus) are tagged with se-
+mantic descriptions (accessibility labels). Users do not need to visually locate a button;
+instead, they navigate the interface using standard gestures (e.g., linear swiping to move
+focus, double-tapping to activate) familiar to proficient screen reader users. This negates
+the need for precise tactile targeting.
+•Low vision support:For participants with residual vision, the GUI implements high-
+contrast color schemes and scalable typography to maximize legibility, as defined in the
+configuration settings.
+•Multimodal feedback:To confirm actions (such as capturing an image or sending a
+request to the AI model), the system employs a triad of feedback mechanisms: auditory
+cues (TTS), visual highlights (for low vision), and haptic feedback (vibration patterns).
+We provide an specific option for finding objects in the scene (called ”Find an Object”),
+where the camera must be pointed at a specific target, we implemented a continuous guidance
+system. As the user pans the camera, the system provides real-time audio-haptic feedback,
+increasing the frequency of vibration and audio beeps as the target object moves closer to the
+center of the frame, similar to a Geiger counter. This allows users to center objects without
+visual reference.
+4.2.1 Real-time Spatial Guidance and Haptic F eedback
+A critical challenge for visually impaired users in object detection tasks is not merely identifying
+whatis in the scene, butwhereit is located relative to the camera to facilitate physical grasping.
+Regarding the mechanism of this interaction, we detail our guidance algorithm below.
+The “Find an Object” module implements a closed-loop feedback system that guides the
+user to center the target object (e.g., keys, cup) in the camera frame without visual references.
+The algorithm operates in two concurrent stages:
+1.Coarse navigation (directional TTS):When the target object is detected but resides
+in the periphery of the image (outside the center of the screen), the system calculates
+the quadrant of the object’s bounding box. Based on this position, AIDEN emits specific
+verbal instructions via the TTS engine, such as: “Move camera to the left,” “Move camera
+to the right,” “Tilt up,” or “Tilt down.”
+2.Fine positioning (the “Geiger Counter” metaphor):Once the object enters the
+central region, verbal commands become too slow for real-time adjustments. Here, we
+switch to a continuous audio-haptic feedback loop (Sonification). The system computes
+the Euclidean distancedbetween the center of the object’s bounding box (x obj, yobj) and
+the center of the camera frame (c x, cy).
+This distancedis inversely mapped to the frequency of haptic pulses (vibrations) and
+audio beeps. As the user moves the camera andddecreases (the object becomes more
+centered), the frequency increases:
+•Peripheral detection:Intermittent vibration pulses (200ms ON, 300ms OFF).
+•Approaching center:Rapid pulsing (200ms ON, 100ms OFF).
+6
+
+
+===== PAGE 7 =====
+•Locked/Centered:Continuous steady vibration and a distinct confirmation tone,
+signaling the user that the object is directly ahead and reachable.
+This multimodal approach ensures that the user receives instantaneous spatial information,
+compensating for the lack of visual depth perception and enabling precise camera aiming.
+4.3 Question Design
+The user interface is organized into two main views: the home screen, which provides access to
+the three core functionalities (“Object Description”, “Text-To-Speech”, and “Find an Object”),
+and the capture view, where users can either take a new photo or import an existing one
+to receive model-generated feedback. Figure 1 illustrate the key interaction screens of the
+application.
+(a) Home view
+ (b) “Object Description”
+and “Text-To-Speech”
+view
+(c) Entering information
+via text
+(d) View to locate an ele-
+ment in the space
+Figure 1: User interface views of the application.
+To assess user experience and acceptance, a questionnaire was administered consisting of
+the following items:
+Q1: I found the system sufficiently intuitive for practical use.
+Q2: I believe the system supports autonomous usage by the user.
+Q3: I believe visually impaired users will find the assistance system enjoyable to use.
+Q4: I found the proposed system to be highly motivating for users.
+Q5: I believe conducting meetings using this system is beneficial.
+Q6: I consider the system for visualizing remote participants in a classroom to be a valuable
+communication resource.
+Q7: I found the person visualization system to be an effective communication resource from
+the remote user’s perspective.
+Q8: I found the prototype to be well-conceived.
+7
+
+
+===== PAGE 8 =====
+Q9: I believe the system’s design is appealing to the user.
+Q10: I believe the system’s features are attractive to prospective clients.
+Q11: The prototype’s features are straightforward and comprehensible enough for widespread
+implementation.
+Q12: The proposal adequately addresses the need for a support system in hybrid teaching
+sessions.
+Q13: I would be interested in utilizing the system in a real-world scenario and implementing it
+in practice.
+Q14: I would like to incorporate the final version of the system into the corporate or institutional
+strategy.
+Q15: I would recommend employing the final version of the system for user interactions.
+Q16: Overall, I rate the proposed system positively.
+4.4 Materials and Equipment
+All functionalities in AIDEN share a unified and consistent layout: approximately 45% of the
+screen is dedicated to the camera preview, while the remaining space hosts control buttons and
+displays the system’s output. This design ensures a seamless and intuitive experience, enabling
+users to easily capture or select images, access system responses, and navigate through the
+application.
+Given the computational complexity of the algorithms used, such as deep learning, based ob-
+ject detection and VQA, executing all functionalities directly on a mobile device would demand
+high-end hardware and lead to reduced accuracy or degraded performance. To address this
+challenge and broaden accessibility across devices, AIDEN adopts a distributed interconnection
+architecture.
+In this architecture, computationally intensive models such as YOLO and a Visual Large
+Language Model (VLLM), specifically LLaVA, are executed on a centralized server. The mobile
+application is responsible solely for capturing input and presenting the output. This setup
+significantly reduces the hardware requirements on the user’s side and simplifies updates to
+the core models. However, it does require an active internet connection (WiFi or mobile data),
+which is common among most users. When a user interacts with AIDEN, by selecting a function
+and capturing an image, the data is sent to the remote server, processed in a first-in-first-out
+manner, and the result is sent back to the device, where it is presented to the user using visual,
+audio, or haptic feedback.
+One of the key features supported by this architecture is OCR. This option allows users
+to interpret printed text from various surfaces. To perform this task, the system leverages a
+specialized AI Agent (based on the LLaVA model). This agent, which is configured with a
+specific role and prompt, uses the image to provide an answer to the user in the OCR option,
+generating textual, and more accuracy, transcriptions from image inputs.
+The OCR process involves capturing or uploading an image that contains printed or digital
+text. The image is then sent to the server, where it is processed by LLaVA using the prompt:
+”Transcribe the text present in this image.”The output is a structured textual representation
+of the detected content.
+LLaVA demonstrated high transcription accuracy under standard conditions, successfully
+interpreting a high percentage of characters in images with clearly printed text. While its
+performance slightly degrades with blurred or distorted inputs, it still produces useful results.
+8
+
+
+===== PAGE 9 =====
+(a) Legumbres PEDRO
+ALUBIAS beans.
+(b) ...Nolotil 575 mg cap-
+sulas duras Metamizol...
+(c) A se vi Suavizante
+Azul pres ccr intense.
+(d) CARRER
+DE L’ARTISTA
+FOGUERER.
+Figure 2: Random samples of input images and retrieved text returned by the OCR feature.
+Moreover, it supports multilingual recognition. Representative examples of OCR output are
+shown in Figure 2.
+As mentioned, another feature supported by AIDEN is the “Find an Object”, which helps
+users locate specific items within their environment. After selecting the “Find an Object”
+option, the user vocally specifies the item to search for (e.g., “backpack”) and moves the phone
+to scan the surrounding area. If the object is detected, the system provides real-time voice
+instructions to help the user center it in the camera view. Once centered, the user can move in
+the direction of the phone to retrieve the item.
+This functionality is powered by YOLOv8 [27], a state-of-the-art object detection model
+capable of identifying 80 different categories, such as bottles, glasses, and backpacks. To address
+user needs, we extended the model to include an additional class for “door”, a frequently
+requested element not available in the standard model. Examples of detections produced by
+this feature are shown in Figure 3.
+(a)
+ (b)
+ (c)
+Figure 3: Actual detections of the “Find an Object” method in an office environment.
+4.5 Experimental Setup and Procedure
+Two distinct evaluations were conducted to validate the AIDEN system: a quantitative assess-
+ment of runtime performance and a qualitative user study focused on perceived usability and
+technology acceptance.
+9
+
+
+===== PAGE 10 =====
+4.5.1 Apparatus and T echnical Setup
+For the runtime evaluation and during the user tests, AIDEN was deployed on an LG G6
+smartphone (Qualcomm Snapdragon 821, 4 GB RAM, 5.7-inch QHD+ display) connected to a
+4G LTE network. To ensure consistent processing capabilities, computational heavy-lifting was
+offloaded to a remote server running Ubuntu 18.04 LTS, equipped with an Intel i7-8700 CPU,
+32 GB RAM, and dual GPUs (NVIDIA GTX 1080Ti for YOLO processing and NVIDIA A40
+for LLaVA-based tasks).
+4.5.2 User Study Procedure
+The user evaluation took place in a controlled laboratory environment with constant lighting
+conditions and minimized background noise to optimize the performance of computer vision
+models and audio feedback. The session for each participant lasted approximately 25 minutes
+and was divided into three distinct phases:
+Phase 1: T raining and F amiliarizationPrior to data collection, participants underwent a
+tutorial session. An instructor guided them through the application’s interface, allowing them
+to explore tactile boundaries and haptic feedback patterns without recording performance met-
+rics. This phase mitigated the ”learning curve effect”, ensuring that subsequent measurements
+reflected system usability rather than novelty.
+Phase 2: T ask ExecutionParticipants performed three high-priority daily living tasks using
+a counterbalanced order to avoid sequence effects. These tasks evaluated the full spectrum of
+AIDEN’s functionalities:
+•T ask A (object retrieval):Participants stood in front of a table containing clutter and
+were instructed to locate a specific target item using the spatial guidance features (Section
+4.2.1).
+•T ask B (information access):Participants were handed a printed document repre-
+senting a real-world scenario. They used the OCR function to read the text aloud and
+identify specific information (e.g., expiration date).
+•T ask C (scene understanding - VQA):Participants used the LLaVA-based Scene
+Description feature. They pointed the camera at the room to capture an image, which
+the system processed using the fixed prompt:“What is this? Provide the answer as
+summarized as possible.”Users could also ask follow-up natural language questions (e.g.,
+”Is the door open?”). The generated audio descriptions and their correspondence to the
+visual input are illustrated in Figure 4.
+10
+
+
+===== PAGE 11 =====
+Figure 4: Examples of input images and corresponding answers returned by the Scene Descrip-
+tion algorithm during the evaluation.
+Phase 3: Data Collection and Success CriteriaDuring task execution, we employed a
+Think-Aloud Protocol [28], encouraging participants to verbalize their thoughts and frustrations.
+A task was considered ”Successful” if the goal was achieved without physical intervention.
+Upon completion, participants assessed their subjective perception using the TAM. The
+questionnaire consisted of 16 items administered via Google Forms, with responses collected on
+a 5-point Likert scale [29].
+5 Data Preparation and Analysis
+To evaluate both the technical performance and user acceptance of AIDEN, two complementary
+experiments were conducted: one focused on system runtime and the other on user perception
+using the TAM.
+For the runtime evaluation, each of the system’s core functionalities—“Object Description”
+with VQA, “Text-to-Speech” and “Find an Object”—was executed 20 times. During each
+trial, two timing measurements were recorded: the processing time on the remote server, and
+the total response time as observed on the smartphone, which included image transmission
+and result retrieval. These data were used to calculate the mean and standard deviation for
+each functionality, providing insight into the system’s consistency and responsiveness under
+real-world usage conditions.
+To facilitate the interpretation of the Likert scores for a broad audience, mean values were
+mapped to qualitative descriptors inspired by the adjective ratings proposed by Bangor et
+al. [30]. Since Perceived ease-of-use (PEOU) in this context serves as a proxy for usability, we
+adapted their ranges to 5-point Likert scale to qualitatively categorize user satisfaction levels: :
+Very Poor (1.0–1.25), Poor (1.25–2.5), Acceptable (2.5–3.5), Good (3.5–4.0), Excellent (4.0–4.5),
+and Best (4.5–5.0).
+11
+
+
+===== PAGE 12 =====
+Descriptive statistics, including means and score ranges for each question, were calculated
+to summarize the overall perception of the system and to highlight particularly strong or weak
+areas.
+6 Results
+The results of the runtime evaluation are presented in Table 3. Both the “Scene Description”
+and “Text-To-Speech” functionalities exhibited similar server-side runtimes, as they rely on the
+same backend infrastructure and models. Slight differences in processing time were observed due
+to variations in the length and complexity of the generated outputs. In contrast, the “Find an
+Object” functionality, designed for low-latency operation, delivered significantly faster results
+and achieved an average processing speed of 1.96 frames per second on the smartphone.
+F unctionality Server (s) Smartphone (s)
+Scene Description & QA 7.34±1.10 10.10±1.29
+Optical Character Recognition 7.09±2.57 9.54±2.94
+Find an Object (1 req.) 0.23±0.18 0.51±0.22
+Table 3: Runtime of the different functionalities AIDEN provides. Values represent mean±
+standard deviation.
+Regarding user feedback, the TAM questionnaire results are summarized in Figure 5. Over-
+all, participants expressed very positive perceptions of AIDEN, with average ratings falling
+between the ”Excellent” and ”Best” categories for most questions. The highest scores were
+recorded for the system’s design quality (Q8), its perceived usefulness in practical contexts
+such as meetings (Q5), and the intention to adopt the system in real-world scenarios (Q13),
+suggesting strong satisfaction and high adoption potential.
+Figure 5: Average score and standard deviation per question obtained by the 16-item question-
+naire (Range: 1 = Very Poor, 5 = Best).
+To complement the quantitative metrics and TAM scores, we conducted a thematic analysis
+of the participants’ verbal feedback and the behavioral patterns observed during the sessions.
+This triangulation provides a deeper insight into the practical challenges of deploying AI assis-
+tants for visually impaired individuals.
+12
+
+
+===== PAGE 13 =====
+6.0.1 Behavioral Observations
+During the execution of tasks, the researchers noted specific interaction patterns that influenced
+the system’s performance:
+•Curve learning:Regarding the “Find an Object” function, users initially struggled
+to interpret the varying vibration frequencies. However, after the third attempt in the
+training phase, participants displayed a smoother scanning motion, suggesting that the
+“Geiger counter” metaphor, while effective, requires a short adaptation period.
+•Distance estimation:In the OCR task (Task B), some participants held the document
+too close to the lens. Conversely, others held the document too far away or positioned it
+such that the capture encompassed a broad area of unnecessary text.
+6.0.2 User F eedback and Perceived Utility
+Participants were encouraged to express their thoughts using a Think-Aloud protocol. The
+feedback was largely positive regarding autonomy, though constructive criticism was raised
+regarding physical ergonomics.
+•On autonomy and speed:Participants valued the response time of the local AI models.
+Participant [P2] remarked:“I am used to waiting much longer with cloud-based apps.
+Having the answer instantly makes me feel more confident to keep walking.”Similarly,
+Participant [P5] noted:“The ability to find my keys without calling my son is a huge relief
+for me.”
+•On interface navigation:While the semantic navigation was praised, some users sug-
+gested improvements. Participant [P4] stated:“The buttons are accessible, but the space
+between the buttons must be removed.”
+These qualitative insights align with the TAM results, confirming that while the functional
+utility is high, the physical interaction with the device remains the primary bottleneck for
+non-visual users.
+6.1 Evaluation Framework
+To strictly assess the system’s potential for real-world adoption, we employed the TAM. We
+selected TAM over pure usability metrics because, while it captures the perceived usability
+through the PEOU construct, it specifically correlates this factor with the user’s Behavioral In-
+tention to Use (BI). Given the pilot nature of this study, BI is analyzed as the primary predictor
+of future adoption, serving as a proxy for “Actual System Use” which requires longitudinal data
+not yet available in this development phase:
+1.PU:defined as the degree to which the user believes that AIDEN enhances their autonomy
+in daily tasks (e.g., reading without assistance).
+2.PEOU:defined as the degree to which using the system is free of physical and cognitive
+effort. In the context of visual impairment, PEOU is directly linked to the efficacy of the
+non-visual interface (haptics and audio).
+6.2 User Acceptance and Usability Analysis
+To rigorously assess user acceptance, participant responses were analyzed using the TAM. Given
+the sample size (N= 7), we adopted robust non-parametric statistical methods. We employed
+13
+
+
+===== PAGE 14 =====
+bootstrapping (withR= 2000 resamples) to generate bias-corrected 95% confidence intervals.
+The detailed descriptive statistics for each construct and item are presented in Table 6.2.
+Reliability analysis demonstrated internal consistency. Cronbach’sαvalues were 0.82 for
+PU and an exceptional 0.93 for PEOU, both well above the recommended threshold of 0.70 [31].
+Regarding the balance between constructs, the Wilcoxon Signed-Rank Test [32] revealed no
+significant divergence between the system’s utility and its ease of use (Z≈0.00,p= 1.00). This
+high p-value and near-zero Z-score indicate that the ratings for both constructs are statistically
+indistinguishable, suggesting that users perceived the system as equally balanced: it effectively
+delivers utility without imposing a high cognitive load for interaction.
+Construct Item Description Mdn IQR Mean SD 95% CI
+Perceived Usefulness (PU)
+PU1: Useful for meetings 5.0 0.5 4.57 0.79 [3.86, 5.00]
+PU2: Resource for classroom 4.0 1.0 4.29 0.76 [3.71, 4.71]
+PU3: Resource for remote user 4.0 1.0 4.29 0.76 [3.71, 4.71]
+PU4: Satisfies specific need 4.0 1.5 3.86 0.90 [3.29, 4.57]
+Construct Aggregate4.25 0.88 4.25 0.65 [3.82, 4.71]
+Perceived Ease of Use (PEOU)
+PEOU1: System is intuitive 5.0 1.5 4.14 1.21 [3.00, 4.86]
+PEOU2: Autonomy in use 5.0 1.5 4.14 1.21 [3.00, 4.86]
+PEOU3: Options are easy/clear 5.0 2.0 4.00 1.29 [2.86, 4.71]
+Construct Aggregate4.33 1.33 4.10 1.17 [2.96, 4.71]
+Attitude Towards Using (ATT)
+ATT1: Users will enjoy using it 5.0 1.0 4.43 0.98 [3.57, 5.00]
+ATT2: Motivating system 4.0 1.0 4.29 0.76 [3.71, 4.71]
+ATT3: Well thought out 5.0 0.5 4.71 0.49 [4.29, 5.00]
+ATT4: Attractive design 5.0 1.0 4.43 0.79 [3.71, 4.86]
+ATT5: Attractive options 5.0 1.0 4.43 0.79 [3.71, 4.86]
+ATT6: Positive overall rating 4.0 1.0 4.29 0.76 [3.71, 4.71]
+Construct Aggregate4.50 0.67 4.43 0.64 [3.83, 4.76]
+Behavioral Intention (BI)
+BI1: I would like to use it 5.0 1.0 4.57 0.53 [4.14, 4.86]
+BI2: Introduce final version 5.0 1.0 4.43 0.79 [3.71, 4.86]
+BI3: I would recommend it 4.0 1.0 4.43 0.53 [4.14, 4.86]
+Construct Aggregate4.33 0.83 4.48 0.54 [4.14, 4.85]
+Table 4: Descriptive statistics of the TAM questionnaire including robust estimators. CI rep-
+resents the 95% bootstrapped confidence interval. Mdn = Median; IQR = Interquartile Range;
+SD = Standard Deviation. Range: 1 = Very Poor, 5 = Best.
+7 Discussion
+The empirical results corroborate that the proposed distributed architecture successfully unifies
+“Scene Description” with VQA, “Text-To-Speech” and “Find an Object” into a coherent inter-
+action paradigm. From a technical standpoint, the system demonstrated robust performance
+across all core functionalities, maintaining reliability even on consumer-grade mobile hardware
+by effectively offloading computationally intensive tasks. Notably, the “Find an Object” module
+achieved near real-time latency, delivering fluid feedback that is instrumental to a seamless user
+experience.
+Beyond the standard constructs of the TAM, our analysis yielded critical insights regarding
+the determinants of adoption. While both PU (µ= 4.25) and PEOU (µ= 4.10) were rated
+14
+
+
+===== PAGE 15 =====
+highly, Spearman correlation analysis unveiled that BI was most strongly correlated with the
+Attitude Towards Using (ATT) construct (β= 0.869,p <0.05).
+This finding elucidates that, for this specific class of AT, users’ intention to adopt the
+system (µ= 4.48, 95% CI [4.14,4.85]) is driven primarily by intrinsic motivation and perceived
+design quality, rather than by functional utility alone. Participants characterized the system not
+merely as useful but as engaging, a distinct quality that significantly bolstered their willingness
+to recommend and integrate it into their daily routines.
+From a user-centered perspective, the high ratings for PU confirm that AIDEN effectively
+addresses genuine user needs. Qualitative feedback described the application as intuitive, a
+result largely attributed to the rigorous emphasis on usability via multimodal feedback, specifi-
+cally the integration of voice guidance and haptic signals. This underscores the value of AIDEN
+not just as a technical demonstration, but as a practical tool aligned with foundational Hu-
+man–Computer Interaction principles for accessibility.
+A significant finding of this study is the observed structural relationship between acceptance
+factors. While traditional TAM literature typically identifies PU as the strongest direct predictor
+of BI [33], our analysis suggests that ATT appears to be the primary factor driving the intention
+to use AIDEN (β= 0.869, p <0.05). This elevated role of Attitude suggests a possible shift
+from purely functional drivers to intrinsic motivators:
+1.Intrinsic motivation vs. performance expectancy:Unlike studies applying UTAUT [34],
+to visually impaired populations—where performance expectancy typically dictates adop-
+tion [13]—the strong correlation between ATT and BI in our study indicates that the
+quality of the experience is paramount. This contrasts with findings in other contexts,
+such as mobile payments for visually impaired individuals in India, where Ease of Use
+was the primary determinant [35]. In the case of AIDEN, user adoption may be driven
+not solely by the system’s utility (what it does), but by the subjective satisfaction of the
+interaction (how users feel while using it). This apparent influence of ATT could arise
+from the contrast between the frustration experienced in manual, unsupported tasks and
+the relative relief provided by the application.
+2.Experience economy in assistive tech:Prior work has integrated an Experience
+Economy–based construct into an extended TAM for hotel mobile applications, show-
+ing that experiential factors can strongly predict behavioral intention alongside perceived
+usefulness [33]. Complementing this, research on high-tech assistive technologies for stu-
+dents with visual impairment highlights the central role of intrinsic factors such as self-
+confidence, technophobia and attitudes in determining whether these technologies are
+actually used [10]. Building on our findings, we therefore hypothesize that, for assistive
+technologies, design choices that foster users’ trust and confidence (e.g., through clear
+and reassuring feedback such as haptics) can substantially enhance their attitude towards
+using the system and may become at least as important for future use as purely objective
+efficiency metrics.
+Although this pilot study focused specifically on visual impairments, the architectural design
+of AIDEN strictly adheres to the native accessibility standards of the mobile operating system.
+This adherence ensures theoretical compatibility with system-level assistive technologies. Con-
+sequently, users with limited fine motor control can interact with AIDEN using external input
+devices or voice commands, bypassing the need for touch gestures. This inherent compatibility
+extends the system’s potential impact beyond the demographic examined in this preliminary
+study.
+15
+
+
+===== PAGE 16 =====
+8 Limitations and Conclusion
+Interpreting the findings presented above requires careful consideration of the study’s constraints
+to contextualize our contribution and outline the roadmap for future research. Regarding sample
+size and demographics, our user study involved a cohort of seven participants (N= 7). While
+this sample size is consistent with usability testing standards for specialized populations to
+identify major design flaws, it limits the statistical power required to generalize the findings
+to the broader visually impaired community. Consequently, our results should be interpreted
+as a preliminary validation of the system’s design and interaction logic rather than a definitive
+proof of clinical efficacy. Future iterations will aim to recruit larger, more demographically
+diverse cohorts. Furthermore, the evaluation was conducted in a controlled laboratory setting.
+While this ensured participant safety and variable consistency, it does not fully reflect the
+stochastic nature of “in-the-wild” environments. Factors such as dynamic outdoor lighting,
+acoustic interference in crowded spaces, or intermittent network connectivity were not stress-
+tested in this initial phase.
+Turning to technical and design constraints, a critical challenge inherent to integrating
+VLLMs is the potential for hallucinations. In the context of AT for visually impaired users, this
+becomes a safety-critical issue. If the system incorrectly identifies a clear path or a non-existent
+object without providing a confidence metric, it risks violating the robustness and understand-
+ability principles of the WCAG. The current iteration of AIDEN, like existing commercial ap-
+plications, does not yet feature a real-time uncertainty quantification mechanism to alert users
+when the AI’s confidence is low, posing a risk that users might place undue trust in erroneous
+descriptions. User safety is intrinsically linked to interaction design. The current reliance on
+complex touch gestures risks excluding users with accompanying motor impairments. Strictly
+adhering to WCAG 2.1 Criterion 2.5.1 (Pointer Gestures), the application must ensure that all
+functions are operable via simple inputs and provide touch targets of at least 44×44 pixels.
+The current prototype requires further refinement to offer redundant, large tactile controls for
+robust accessibility.
+Building on these identified limitations, future research direction focuses on three key areas.
+First, we plan to deploy AIDEN in a longitudinal “beta testing” program for daily use over
+several weeks to assess technology acceptance under real-world conditions. Second, to mitigate
+the risk of hallucinations, future work will implement confidence scoring layers, allowing the
+system to verbally qualify its descriptions or withhold output if the confidence threshold is
+not met. Finally, we aim to integrate Edge AI capabilities to reduce dependency on internet
+connectivity and expand the “Find an Object” feature to support personalized object enrollment
+and smart home integration.
+Ethical Considerations
+The need for specific ethical clearance was obviated primarily because participant data was rig-
+orously anonymized. This measure was implemented in strict accordance with the GDPR guide-
+lines, ensuring that no Personal Identifiable Information (PII) was stored or shared throughout
+the study.
+Acknowledgment
+This work was fully supported by Indra and Fundaci´ on Universia. The authors also acknowledge
+the use of Google’s Gemini 3 Pro for assistance with the translation and linguistic refinement
+of this manuscript.
+16
+
+
+===== PAGE 17 =====
+REFERENCES
+[1] Roberto Manduchi. “Mobile vision as assistive technology for the blind: An experimental
+study”. In:International Conference on Computers for Handicapped Persons. Springer.
+2012, pp. 9–16.
+[2] Seeing AI.Seeing AI - Talking Camera App for the Blind. Accessed: 2025-11-30. 2024.
+url:https://www.seeingai.com/.
+[3] Be My Eyes.Be My Eyes: Lend Your Eyes to the Blind. Accessed: 2025-11-30. 2024.url:
+https://www.bemyeyes.com.
+[4] Dragan Ahmetovic et al. “Enhancing screen reader intelligibility in noisy environments”.
+In:IEEE Transactions on Human-Machine Systems53.4 (2023), pp. 771–780.
+[5] Xinyan Zhao. “Hearing the World: A Pilot Study Design on Spatial Audio for the Visually
+Impaired”. In:Proceedings of the 27th International Academic Mindtrek Conference. 2024,
+pp. 244–248.
+[6] Paraskevi Theodorou and Apostolos Meliones. “Developing apps for people with sensory
+disabilities, and implications for technology acceptance models”. In:Global Journal of
+Information Technology: Emerging Technologies9.2 (2019), pp. 33–40.
+[7] Christina Granquist et al. “Evaluation and comparison of artificial intelligence vision
+aids: Orcam myeye 1 and seeing ai”. In:Journal of Visual Impairment & Blindness115.4
+(2021), pp. 277–285.
+[8] Tousif Ahmed et al. “Privacy concerns and behaviors of people with visual impairments”.
+In:Proceedings of the 33rd annual ACM conference on human factors in computing sys-
+tems. 2015, pp. 3523–3532.
+[9] Serge A Korff. “Geiger counters”. In:Nuclear Instrumentation II/Instrumentelle Hilfs-
+mittel der Kernphysik II. Springer, 1958, pp. 52–85.
+[10] Sarah Ezekiel Kisanga. “Enhancing High-tech Assistive Technology Use for Learning
+among Students with Visual Impairment in Tanzania’s Higher Education”. In:University
+of Dar es Salaam Library Journal20.1 (2025), pp. 226–239.
+[11] Mahir Mohammed Sharif Adam et al. “Leveraging assistive technology for visually im-
+paired people through optimal deep transfer learning based object detection model”. In:
+Scientific Reports15.1 (2025), p. 30113.
+[12] Mediate.Supersense: AI scanner for the blind.https://www.supersense.app/. Accessed:
+2024-09-23. 2024.
+[13] Hyunchang Moon et al. “Factors influencing the intention of persons with visual impair-
+ment to adopt mobile applications based on the UTAUT model”. In:Universal Access in
+the Information Society21.1 (2022), pp. 93–107.
+[14] Nicolas Pfitzer et al.MR.NAVI: Mixed-Reality Navigation Assistant for the Visually Im-
+paired. 2025.doi:https://arxiv.org/abs/2506.05369. arXiv:2506.05369 [cs.CV].
+[15] Alexander A Stevens and Kurt Weaver. “Auditory perceptual consolidation in early-onset
+blindness”. In:Neuropsychologia43.13 (2005), pp. 1901–1910.
+[16] Meta Platforms, Inc.Ray-Ban Meta Smart Glasses.https://www.meta.com/smart-
+glasses/. Accessed: 2025-11-30. 2024.
+[17] Fred D Davis, Richard P Bagozzi, and Paul R Warshaw. “Technology acceptance model”.
+In:J Manag Sci35.8 (1989), pp. 982–1003.
+[18] Soussan Djamasbi et al. “Web Accessibility for Visually Impaired Users: Extending the
+Technology Acceptance Model (TAM)”. In:Proceedings of AMCIS 2006. 2006.
+17
+
+
+===== PAGE 18 =====
+[19] Anima Bag et al. “Acceptance factors for the use of video call via smartphone by blind
+people”. In:Technology in Society(2016).
+[20] Paraskevi Theodorou, Kleomenis Tsiligkos, and Apostolos Meliones. “Challenges in Ac-
+ceptance of Smartphone-Based Assistive Technologies: Extending the UTAUT Model for
+People With Visual Impairments”. In:Journal of Visual Impairment & Blindness118.1
+(2024), pp. 18–30.
+[21] Ionic.Screen Reader Capacitor Plugin API.https://capacitorjs.com/docs/apis/
+screen-reader. Accessed: 2023-09-24.
+[22] Kazuya Kawaguchi.Vue I18n.https://vue-i18n.intlify.dev/. Accessed: 2023-09-24.
+[23] Rebecca Matter et al. “Assistive technology in resource-limited environments: a scoping
+review”. In:Disability and Rehabilitation: Assistive Technology12.2 (2017), pp. 105–114.
+[24] Robert A Virzi. “Refining the test phase of usability evaluation: how many subjects is
+enough?” In:Human factors34.4 (1992), pp. 457–468.
+[25] Jakob Nielsen and Thomas K Landauer. “A mathematical model of the finding of usabil-
+ity problems”. In:Proceedings of the INTERACT’93 and CHI’93 conference on Human
+factors in computing systems. 1993, pp. 206–213.
+[26] Andrew Kirkpatrick et al.Web Content Accessibility Guidelines (WCAG) 2.1. W3C Rec-
+ommendation. World Wide Web Consortium (W3C), June 2018.url:https://www.w3.
+org/TR/WCAG21/.
+[27] Glenn Jocher, Ayush Chaurasia, and Jing Qiu.Ultralytics YOLO. Version 8.0.0. Jan. 2023.
+url:https://github.com/ultralytics/ultralytics.
+[28] K Anders Ericsson. “Protocol analysis”. In:A companion to cognitive science(2017),
+pp. 425–432.
+[29] Ankur Joshi et al. “Likert scale: Explored and explained”. In:British journal of applied
+science & technology7.4 (2015), p. 396.
+[30] Aaron Bangor, Philip Kortum, and James Miller. “Determining what individual SUS
+scores mean: Adding an adjective rating scale”. In:Journal of usability studies4.3 (2009),
+pp. 114–123.
+[31] Joseph F Hair. “Multivariate data analysis”. In: (2009).
+[32] Robert F Woolson. “Wilcoxon signed-rank test”. In:Wiley encyclopedia of clinical trials
+(2007), pp. 1–3.
+[33] Yu-Chih Huang et al. “Examining an extended technology acceptance model with ex-
+perience construct on hotel consumers’ adoption of mobile applications”. In:Journal of
+Hospitality Marketing & Management28.8 (2019), pp. 957–980.
+[34] Viswanath Venkatesh, James YL Thong, and Xin Xu. “Consumer acceptance and use of
+information technology: extending the unified theory of acceptance and use of technology”.
+In:MIS quarterly(2012), pp. 157–178.
+[35] V Parvathy and D Durairaj. “Adoption of mobile payment among visually impaired users
+in Tamil Nadu based on technology acceptance model (TAM)”. In:International journal
+of health sciences6.S3 (2022), pp. 5346–5361.
+18

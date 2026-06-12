@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#071b18">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="VISIO-NETRA">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>VISIO-NETRA Mobile</title>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#quickActions">Skip to actions</a>
+
+    <main id="main" class="mobile-shell">
+      <section class="hero-camera" aria-labelledby="cameraTitle">
+        <header class="app-topbar">
+          <div class="brand-lockup">
+            <span class="brand-mark" aria-hidden="true">N</span>
+            <div>
+              <p class="eyebrow">VISIO-NETRA</p>
+              <h1 id="cameraTitle">Vision Assistant</h1>
+            </div>
+          </div>
+          <div class="status-cluster" aria-live="polite">
+            <span id="serviceStatus" class="status-pill">Starting</span>
+            <span id="modeStatus" class="status-pill muted">Standby</span>
+            <span id="modelStatus" class="status-pill muted">Local</span>
+            <span id="riskStatus" class="status-pill muted">Risk --</span>
+            <span id="latencyBadge" class="status-pill muted">-- ms</span>
+          </div>
+        </header>
+
+        <div class="video-wrap">
+          <video id="camera" playsinline muted aria-label="Camera preview"></video>
+          <canvas id="overlay" aria-hidden="true"></canvas>
+          <div id="cameraFallback" class="fallback">
+            Camera preview is idle.
+          </div>
+          <div class="guidance-card" role="status" aria-live="assertive">
+            <span class="guidance-label">AI Reasoning</span>
+            <strong id="latestGuidance">No frame analyzed yet.</strong>
+          </div>
+          <div class="detected-card">
+            <div class="card-header">
+              <h2>Detected Objects</h2>
+              <span id="objectCount" class="tag">0</span>
+            </div>
+            <div id="objectList" class="object-list empty">No objects yet.</div>
+          </div>
+        </div>
+
+        <div class="telemetry-grid" aria-label="Navigation telemetry">
+          <div class="metric">
+            <span class="metric-label">Distance</span>
+            <strong id="distanceValue">--</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Direction</span>
+            <strong id="directionValue">--</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Latency</span>
+            <strong id="latencyValue">-- ms</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Confidence</span>
+            <strong id="confidenceValue">--</strong>
+          </div>
+        </div>
+
+        <section id="quickActions" class="quick-actions" aria-label="Main mobile actions">
+          <button id="startCamera" class="primary">Start Camera</button>
+          <button id="captureFrame">Frame</button>
+          <button id="runNavigation" class="primary">Navigate</button>
+          <button id="toggleLive">Live Scan</button>
+          <button id="voiceCommand">Voice</button>
+          <button id="stopSpeech">Mute</button>
+          <button id="installApp" class="install-button" hidden>Install</button>
+        </section>
+      </section>
+
+      <section class="mobile-card command-card" aria-label="Command and target">
+        <label for="commandInput">Command</label>
+        <div class="inline-control">
+          <input id="commandInput" autocomplete="off" inputmode="text" placeholder="find door, read text, task make coffee">
+          <button id="runCommand" class="primary">Run</button>
+        </div>
+        <div class="inline-control target-row">
+          <label class="field-inline" for="targetObject">Target</label>
+          <input id="targetObject" value="door" autocomplete="off">
+          <button id="voiceCommandPanel">Speak</button>
+        </div>
+        <div class="command-chips" aria-label="Quick commands">
+          <button type="button" data-command="what is around me?">Around me</button>
+          <button type="button" data-command="find door">Find door</button>
+          <button type="button" data-command="precision handle">Precision</button>
+          <button type="button" data-command="read text">Read text</button>
+          <button type="button" data-command="task make coffee">Coffee task</button>
+        </div>
+        <p id="installHint" class="subtle">Installable mobile app mode is ready on supported browsers.</p>
+      </section>
+
+      <section class="action-grid" aria-label="Vision modes">
+        <button id="runObject">Find</button>
+        <button id="runMicro">Precision</button>
+        <button id="runOcr">Read</button>
+        <button id="runScene">Scene</button>
+        <button id="runSocial">Social</button>
+        <button id="runNavigationPanel" class="primary">Navigate</button>
+      </section>
+
+      <section class="mobile-card">
+        <div class="card-header">
+          <h2>Navigation</h2>
+          <div class="tag-row">
+            <span id="locationMatch" class="tag">No place match</span>
+            <span id="pathClearance" class="tag">Path --</span>
+          </div>
+        </div>
+        <p id="sceneSummary" class="summary">Awaiting frame.</p>
+        <div class="safety-panel" aria-live="polite">
+          <div class="safety-head">
+            <span>Risk</span>
+            <strong id="riskLabel">Awaiting scan</strong>
+          </div>
+          <div class="risk-meter" aria-hidden="true">
+            <span id="riskMeter"></span>
+          </div>
+          <p id="nextAction" class="summary">No next action yet.</p>
+          <div id="actionList" class="action-list empty">No action steps yet.</div>
+        </div>
+        <div id="hazardList" class="stack empty">No hazards yet.</div>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Precision</h2>
+        <div id="microVector" class="vector-box">No precision target yet.</div>
+        <div id="objectResult" class="result-box" aria-live="polite"></div>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Answer</h2>
+        <div id="answerResult" class="result-box" aria-live="polite"></div>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Readers</h2>
+        <div id="ocrResult" class="result-box" aria-live="polite"></div>
+        <label for="manualText">Manual text</label>
+        <textarea id="manualText" rows="3" placeholder="Paste text here"></textarea>
+        <button id="speakManual">Speak Text</button>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Social And Environment</h2>
+        <div id="socialCue" class="stack empty">No social cue yet.</div>
+        <div id="environmentCue" class="stack empty">No environment markers yet.</div>
+      </section>
+
+      <section class="mobile-card">
+        <div class="card-header">
+          <h2>Task Steps</h2>
+          <span id="taskProgress" class="tag">0/0</span>
+        </div>
+        <label for="taskSelect">Preset</label>
+        <select id="taskSelect">
+          <option value="tea">Make tea</option>
+          <option value="coffee">Make coffee</option>
+          <option value="door">Approach a door</option>
+          <option value="label">Read a product label</option>
+          <option value="seat">Find a seat</option>
+          <option value="elevator">Use elevator panel</option>
+        </select>
+        <label for="customTask">Custom task</label>
+        <input id="customTask" autocomplete="off" placeholder="Help me find my keys">
+        <div class="button-row">
+          <button id="planTask">Plan</button>
+          <button id="prevStep">Back</button>
+          <button id="verifyStep" class="primary">Verify</button>
+          <button id="nextStep">Next</button>
+        </div>
+        <ol id="taskSteps" class="steps"></ol>
+        <div id="taskResult" class="result-box" aria-live="polite"></div>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Memory Palace</h2>
+        <div class="memory-grid">
+          <label for="landmarkName">Place<input id="landmarkName" placeholder="Kitchen counter"></label>
+          <label for="landmarkNote">Note<input id="landmarkNote" placeholder="Left of the sink"></label>
+        </div>
+        <div class="button-row">
+          <button id="saveLandmark" class="primary">Save</button>
+          <button id="clearLandmarks">Clear</button>
+        </div>
+        <ul id="landmarkList" class="landmarks"></ul>
+      </section>
+
+      <section class="mobile-card">
+        <h2>Model Stack</h2>
+        <div id="modelDetails" class="result-box" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
