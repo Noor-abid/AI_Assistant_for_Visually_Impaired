@@ -1,0 +1,10 @@
+{
+  "name": "Assistive Vision",
+  "short_name": "Vision Aid",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08110f",
+  "theme_color": "#08110f",
+  "icons": []
+}
+

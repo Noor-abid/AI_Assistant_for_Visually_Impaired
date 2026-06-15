@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Accessible real-time camera assistance" />
+    <meta name="theme-color" content="#08110f" />
+    <title>Assistive Vision</title>
+    <link rel="manifest" href="/static/manifest.json" />
+    <link rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body>
+    <div id="announcer" class="sr-only" aria-live="assertive"></div>
+
+    <video id="camera" autoplay playsinline muted aria-label="Camera preview"></video>
+
+    <main class="hud" aria-label="Assistive vision controls">
+      <section class="intel-stack" aria-label="Live intelligence">
+        <article class="glass-card reasoning-card">
+          <header class="card-header">
+            <div class="card-title">
+              <span id="statusDot" class="status-dot"></span>
+              <span id="statusText">Ready</span>
+              <span>AI Reasoning</span>
+            </div>
+            <span id="headingText" class="heading-readout">0°</span>
+          </header>
+          <p id="sceneText" class="reasoning-text">Double-tap Start. Guidance will be spoken aloud.</p>
+          <p id="socialCue" class="cue-chip" hidden></p>
+          <p id="envCue" class="cue-chip warning" hidden></p>
+        </article>
+
+        <article class="glass-card objects-card">
+          <header class="card-header">
+            <span>Detected Objects</span>
+            <span id="objectCount" class="count-badge">0</span>
+          </header>
+          <ul id="objectList" class="object-list"></ul>
+        </article>
+      </section>
+
+      <section class="primary" aria-label="Primary guidance">
+        <p id="mainFeedback"></p>
+        <div id="guideVector" class="guide-vector" aria-hidden="true">
+          <span></span>
+        </div>
+      </section>
+
+      <section id="taskPanel" class="task-panel glass-card" aria-label="Task progress" hidden>
+        <h2>Task</h2>
+        <ol id="taskList"></ol>
+        <p id="taskFeedback" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="detailsPanel" class="details-panel glass-card" aria-label="Scene details" hidden>
+        <p id="modeText">Navigation</p>
+        <p id="targetText"></p>
+      </section>
+
+      <section class="telemetry" aria-label="Telemetry">
+        <div><strong id="distanceText">--</strong><span>Distance</span></div>
+        <div><strong id="directionText">--</strong><span>Direction</span></div>
+        <div><strong id="latencyText">--</strong><span>Latency</span></div>
+      </section>
+
+      <p class="gesture-hint">Start camera · Tap Find and speak · Hold Ask for questions</p>
+
+      <nav class="controls" aria-label="Main commands">
+        <button id="toggleBtn" type="button" aria-label="Start or stop camera guidance">Start</button>
+        <button id="askBtn" type="button" aria-label="Hold to ask a spoken question">Ask</button>
+        <button id="findBtn" type="button" aria-label="Find an object by voice">Find</button>
+        <button id="readBtn" type="button" aria-label="Read visible text aloud">Read</button>
+        <button id="detailsBtn" type="button" aria-label="Show or hide extra details">Details</button>
+      </nav>
+    </main>
+
+    <script type="module" src="/static/js/main.js"></script>
+  </body>
+</html>

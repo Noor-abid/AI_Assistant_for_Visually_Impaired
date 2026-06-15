@@ -1,0 +1,6 @@
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.32,<1.0
+python-dotenv>=1.0,<2.0
+pillow>=10.0,<13.0
+google-genai>=1.0,<2.0
+aiofiles>=24.0,<25.0
