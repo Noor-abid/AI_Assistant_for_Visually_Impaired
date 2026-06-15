@@ -1,7 +1,0 @@
-__pycache__/
-*.pyc
-*.log
-*.out
-server_bg.*
-pyver.*
-visio_netra_memory.json
